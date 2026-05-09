@@ -1,4 +1,4 @@
-FROM php:8.2-fpm
+FROM php:8.4-fpm
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -39,11 +39,14 @@ COPY --chown=admin:admin . /var/www
 # Change current user to admin
 USER admin
 
-# Install Composer dependencies
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+# Git safe directory for Composer operations
+RUN git config --global --add safe.directory /var/www
 
-# Install npm dependencies and build assets
-RUN npm install && npm run build
+# Install Composer dependencies
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+
+# Install npm dependencies and build assets for production
+RUN npm ci && npm run build
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000

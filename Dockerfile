@@ -30,18 +30,17 @@ RUN mkdir -p /home/admin/.composer && \
 # Set working directory
 WORKDIR /var/www
 
-# Copy existing application directory contents
+# Copy application code
 COPY . /var/www
 
-# Copy existing application directory permissions
-COPY --chown=admin:admin . /var/www
+# Ensure correct ownership (in case any files are root-owned)
+RUN chown -R admin:admin /var/www
 
-# Change current user to admin
+# Change to non-root user
 USER admin
 
-# Git safe directory for Composer operations
-RUN git config --global --add safe.directory /var/www
-
+# Allow Composer to run as root (since we are admin, but just in case)
+ENV COMPOSER_ALLOW_SUPERUSER=1
 # Install Composer dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
 

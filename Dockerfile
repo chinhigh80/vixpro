@@ -45,14 +45,13 @@ USER admin
 
 # Allow Composer to run as root (since we are admin, but just in case)
 ENV COMPOSER_ALLOW_SUPERUSER=1
-# Install Composer dependencies including Ziggy
-RUN composer require beyondcode/laravel-ziggy --prefer-dist --no-interaction && \
-    composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev && \
+# Install Laravel Ziggy (dev-master to ensure we get a version) and generate
+RUN composer require beyondcode/laravel-ziggy:dev-master --prefer-dist --no-interaction && \
     php artisan vendor:publish --provider="BeyondCode\Ziggy\ZiggyServiceProvider" --tag=config --force && \
     php artisan ziggy:generate
 
-# Install Ziggy Vue NPM package
-RUN npm install --save-dev @ziggy/vue
+# Install Composer dependencies (now including Ziggy)
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
 
 # Install npm dependencies and build assets for production
 RUN npm ci && npm run build

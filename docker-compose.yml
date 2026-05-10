@@ -13,28 +13,35 @@ services:
       - ./:/var/www
     networks:
       - vixpro
+    healthcheck:
+      test: ["CMD", "php", "-r", "fsockopen('127.0.0.1', 9000) ?: exit(1);"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
 
   webserver:
     image: nginx:alpine
     container_name: vixprodelivery-nginx
     restart: unless-stopped
     ports:
-      - "8000:80"
+      - "8081:80"
     volumes:
       - ./:/var/www
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
-      - app
+      app:
+        condition: service_healthy
     networks:
       - vixpro
 
   db:
+    env_file: .env
     image: mysql:8.0
     container_name: vixprodelivery-db
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: ${DB_DATABASE:-vixprodelivery}
-      MYSQL_USER: ${DB_USERNAME:-root}
+      MYSQL_USER: ${DB_USERNAME:-vixprouser}
       MYSQL_PASSWORD: ${DB_PASSWORD:-}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
     volumes:

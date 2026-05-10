@@ -178,7 +178,6 @@
 <script>
 import { ref, reactive, computed } from 'vue';
 import { useForm, usePage } from '@inertiajs/vue3';
-import { route } from '@ziggy/vue';
 
 export default {
   setup() {
@@ -240,7 +239,6 @@ export default {
       drivers,
       submit,
       resetForm,
-      route
     };
   }
 };

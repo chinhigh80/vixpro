@@ -196,7 +196,6 @@ export default {
       branches,
       submit,
       resetForm,
-      route
     };
   }
 };

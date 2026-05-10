@@ -45,16 +45,16 @@ USER admin
 
 # Allow Composer to run as root (since we are admin, but just in case)
 ENV COMPOSER_ALLOW_SUPERUSER=1
-# Install Laravel Ziggy (dev-master to ensure we get a version) and generate
-RUN composer require beyondcode/laravel-ziggy:dev-master --prefer-dist --no-interaction && \
-    php artisan vendor:publish --provider="BeyondCode\Ziggy\ZiggyServiceProvider" --tag=config --force && \
-    php artisan ziggy:generate
 
-# Install Composer dependencies (now including Ziggy)
+# Install Composer dependencies (including Ziggy from composer.json)
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
 
+# Publish Ziggy config and generate route helper
+RUN php artisan vendor:publish --provider="Tightenco\\\\Ziggy\\\\ZiggyServiceProvider" --tag=config --force && \
+    php artisan ziggy:generate
+
 # Install npm dependencies and build assets for production
-RUN npm ci && npm run build
+RUN npm install && npm run build
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000

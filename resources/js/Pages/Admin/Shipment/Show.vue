@@ -142,7 +142,6 @@ export default {
       formatDateTime,
       getStatusBadgeClass,
       deleteShipment,
-      route
     };
   }
 };
